@@ -1,7 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {useRouter} from "expo-router";
+import {useRouter, Link} from "expo-router";
 import axios from "axios";
 
 const Dashboard = () => {
@@ -11,7 +11,6 @@ const Dashboard = () => {
     const [currentTime, setCurrentTime] = useState(new Date());
     const [intention, setIntention] = useState(null);
     const [mystery, setMystery] = useState(null);
-    const [quote, setQuote] = useState("");
 
 
     // Aktualizacja czasu
@@ -99,7 +98,7 @@ const Dashboard = () => {
         <View style={styles.container}>
             {/* Nagłówek */}
             <View style={styles.header}>
-                <TouchableOpacity onPress={() => console.log('Przejdź do strony głównej')}>
+                <TouchableOpacity>
                     <Image
                         source={require('../../assets/images/rosaryIco.png')}
                         style={styles.logo}
@@ -113,18 +112,18 @@ const Dashboard = () => {
 
             {/* Treść */}
             <ScrollView contentContainerStyle={styles.content}>
-                <Text style={styles.sectionTitle}>Główny pulpit</Text>
+                {/*<Text style={styles.sectionTitle}>Główny pulpit</Text>*/}
 
                 {/* Data i godzina */}
                 <Text style={styles.dateTime}>{formatDateTime()}</Text>
 
                 {/* Intencja */}
                 <Text style={styles.sectionTitle}>Dzisiejsza intencja:</Text>
-                <Text style={styles.intentionMysteryText}>{intention || "Ładowanie intencji..."}</Text>
+                <Text style={styles.intentionMysteryText}>{intention || "Wczytywanie intencji..."}</Text>
 
                 {/* Tajemnica */}
                 <Text style={styles.sectionTitle}>Twoja tajemnica:</Text>
-                <Text style={styles.intentionMysteryText}>{mystery || "Ładowanie tajemnicy..."}</Text>
+                <Text style={styles.intentionMysteryText}>{mystery || "Wczytywanie tajemnicy..."}</Text>
 
                 {/* Dane użytkownika */}
                 {userData ? (
@@ -137,29 +136,19 @@ const Dashboard = () => {
                     <Text style={styles.loadingText}>Ładowanie danych użytkownika...</Text>
                 )}
 
-                {/* Zarządzanie użytkownikami */}
-                <TouchableOpacity style={styles.card}>
-                    <Text style={styles.cardTitle}>Zarządzanie użytkownikami</Text>
-                    <Text style={styles.cardButton}>Dodaj użytkownika</Text>
-                </TouchableOpacity>
-
-                {/* Zarządzanie Różą */}
-                <TouchableOpacity style={styles.card}>
-                    <Text style={styles.cardTitle}>Zarządzanie Różą</Text>
-                    <Text style={styles.cardButton}>Stwórz grupę</Text>
-                </TouchableOpacity>
-
-                {/* Członkowie */}
-                <TouchableOpacity style={styles.card}>
-                    <Text style={styles.cardTitle}>Członkowie</Text>
-                    <Text style={styles.cardButton}>Zobacz członków</Text>
+                {/*Modlitwa i tajemnica*/}
+                <TouchableOpacity style={styles.card} onPress={() => router.push('/dashboard/prayer')}>
+                    <Text style={styles.cardTitle}>Modlitwa i Tajemnica</Text>
+                    <Text style={styles.cardButton}>Odmów modlitwę</Text>
                 </TouchableOpacity>
 
                 {/* Moja Róża */}
-                <TouchableOpacity style={styles.card}>
-                    <Text style={styles.cardTitle}>Moja Róża</Text>
-                    <Text style={styles.cardButton}>Szczegóły</Text>
-                </TouchableOpacity>
+                {intention && intention !== "Brak przypisania do róży" && (
+                    <TouchableOpacity style={styles.card} onPress={() => router.push('/dashboard/rose')}>
+                        <Text style={styles.cardTitle}>Moja Róża</Text>
+                        <Text style={styles.cardButton}>Szczegóły</Text>
+                    </TouchableOpacity>
+                )}
             </ScrollView>
 
             {/* Stopka */}

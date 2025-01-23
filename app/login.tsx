@@ -1,10 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity, Image } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {Link, useRouter} from "expo-router";
-// import { useUser } from '../context/UserContext';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
