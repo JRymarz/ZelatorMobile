@@ -149,6 +149,12 @@ const Dashboard = () => {
                         <Text style={styles.cardButton}>Szczegóły</Text>
                     </TouchableOpacity>
                 )}
+
+                {/*Prośba o Mszę*/}
+                <TouchableOpacity style={styles.card} onPress={() => router.push('/dashboard/mass')}>
+                    <Text style={styles.cardTitle}>Msze Święte</Text>
+                    <Text style={styles.cardButton}>Przeglądaj i zamów</Text>
+                </TouchableOpacity>
             </ScrollView>
 
             {/* Stopka */}

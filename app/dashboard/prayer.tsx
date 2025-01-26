@@ -14,10 +14,11 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Prayer() {
     const [prayerDetails, setPrayerDetails] = useState(null);
-    const [prayerStatus, setPrayerStatus] = useState(null);
+    const [prayerStatus, setPrayerStatus] = useState(false);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [loggedUser, setLoggedUser] = useState(null);
+    const router = useRouter();
 
     useEffect(() => {
         const fetchPrayerDetails = async () => {
@@ -39,6 +40,7 @@ export default function Prayer() {
                         {headers: {'User-ID': userId}}
                     );
                     setPrayerStatus(status.data);
+                    console.log(status.data);
 
                     setLoggedUser(user);
                 }
@@ -60,7 +62,7 @@ export default function Prayer() {
                 {headers: {"User-ID": loggedUser.id}}
             );
             Alert.alert("Sukces", "Modlitwa została oznaczona jako odmówiona.");
-            setPrayerStatus({ status: true, prayerDate: new Date().toISOString() });
+            setPrayerStatus(true);
         } catch (error) {
             Alert.alert("Błąd", "Nie udało się oznaczyć modlitwy jako odmówionej.");
         }
@@ -82,7 +84,7 @@ export default function Prayer() {
         );
     }
 
-    const isPrayerCompletedToday = prayerStatus?.status;
+    // const isPrayerCompletedToday = prayerStatus?
 
     return (
         <ScrollView style={styles.container}>
@@ -135,13 +137,13 @@ export default function Prayer() {
                 <TouchableOpacity
                     style={[
                         styles.button,
-                        isPrayerCompletedToday && { backgroundColor: "gray" },
+                        prayerStatus && { backgroundColor: "gray" },
                     ]}
-                    onPress={!isPrayerCompletedToday ? markPrayerAsCompleted : undefined}
-                    disabled={isPrayerCompletedToday}
+                    onPress={!prayerStatus ? markPrayerAsCompleted : undefined}
+                    disabled={prayerStatus}
                 >
                     <Text style={styles.buttonText}>
-                        {isPrayerCompletedToday
+                        {prayerStatus
                             ? "Modlitwa już zakończona"
                             : "Oznacz modlitwę jako odmówioną"}
                     </Text>
