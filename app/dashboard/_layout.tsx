@@ -38,6 +38,7 @@ export default function DashboardLayout() {
             <Stack.Screen name="rose" options={{headerShown: false}} />
             <Stack.Screen name="prayer" options={{headerShown: false}} />
             <Stack.Screen name="mass" options={{headerShown: false}} />
+            <Stack.Screen name="calendar" options={{headerShown: false}} />
         </Stack>
     );
 }

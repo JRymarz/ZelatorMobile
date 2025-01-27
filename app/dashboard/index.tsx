@@ -112,7 +112,6 @@ const Dashboard = () => {
 
             {/* Treść */}
             <ScrollView contentContainerStyle={styles.content}>
-                {/*<Text style={styles.sectionTitle}>Główny pulpit</Text>*/}
 
                 {/* Data i godzina */}
                 <Text style={styles.dateTime}>{formatDateTime()}</Text>
@@ -151,10 +150,20 @@ const Dashboard = () => {
                 )}
 
                 {/*Prośba o Mszę*/}
-                <TouchableOpacity style={styles.card} onPress={() => router.push('/dashboard/mass')}>
-                    <Text style={styles.cardTitle}>Msze Święte</Text>
-                    <Text style={styles.cardButton}>Przeglądaj i zamów</Text>
-                </TouchableOpacity>
+                {intention && intention !== "Brak przypisania do róży" && (
+                    <TouchableOpacity style={styles.card} onPress={() => router.push('/dashboard/mass')}>
+                        <Text style={styles.cardTitle}>Msze Święte</Text>
+                        <Text style={styles.cardButton}>Przeglądaj i zamów</Text>
+                    </TouchableOpacity>
+                )}
+
+                {/*Kalendarz*/}
+                {intention && intention !== "Brak przypisania do róży" && (
+                    <TouchableOpacity style={styles.card} onPress={() => router.push('/dashboard/calendar')}>
+                        <Text style={styles.cardTitle}>Kalendarz</Text>
+                        <Text style={styles.cardButton}>Zobacz wydarzenia</Text>
+                    </TouchableOpacity>
+                )}
             </ScrollView>
 
             {/* Stopka */}
