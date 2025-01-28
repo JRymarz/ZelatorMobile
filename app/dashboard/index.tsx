@@ -164,6 +164,14 @@ const Dashboard = () => {
                         <Text style={styles.cardButton}>Zobacz wydarzenia</Text>
                     </TouchableOpacity>
                 )}
+
+                {/*Chat*/}
+                {intention && intention !== "Brak przypisania do róży" && (
+                    <TouchableOpacity style={styles.card} onPress={() => router.push('/dashboard/chat')}>
+                        <Text style={styles.cardTitle}>Chat</Text>
+                        <Text style={styles.cardButton}>Wyświetl konwersacje</Text>
+                    </TouchableOpacity>
+                )}
             </ScrollView>
 
             {/* Stopka */}

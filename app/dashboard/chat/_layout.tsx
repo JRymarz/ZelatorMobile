@@ -23,7 +23,7 @@ export default function DashboardLayout() {
 
             if(userData) {
                 console.log(userData)
-                router.replace('/dashboard');
+                router.replace('/dashboard/chat');
             } else {
                 router.replace('/');
             }
@@ -35,11 +35,8 @@ export default function DashboardLayout() {
     return (
         <Stack>
             <Stack.Screen name="index" options={{headerShown: false}} />
-            <Stack.Screen name="rose" options={{headerShown: false}} />
-            <Stack.Screen name="prayer" options={{headerShown: false}} />
-            <Stack.Screen name="mass" options={{headerShown: false}} />
-            <Stack.Screen name="calendar" options={{headerShown: false}} />
-            <Stack.Screen name="chat" options={{headerShown: false}} />
+            <Stack.Screen name="user/[id]" options={{headerShown: false}} />
+            <Stack.Screen name="group/[id]" options={{headerShown: false}} />
         </Stack>
     );
 }
