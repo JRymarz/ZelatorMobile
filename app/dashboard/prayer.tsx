@@ -6,11 +6,12 @@ import {
     ScrollView,
     TouchableOpacity,
     Image,
-    Alert,
+    Alert, Platform,
 } from "react-native";
 import axios from "axios";
 import { Link, useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 export default function Prayer() {
     const [prayerDetails, setPrayerDetails] = useState(null);
@@ -18,6 +19,8 @@ export default function Prayer() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
     const [loggedUser, setLoggedUser] = useState(null);
+    const [reminderTime, setReminderTime] = useState(null);
+    const [showPicker, setShowPicker] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -67,6 +70,31 @@ export default function Prayer() {
             Alert.alert("Błąd", "Nie udało się oznaczyć modlitwy jako odmówionej.");
         }
     };
+
+
+    const saveReminderTime = async () => {
+        try {
+            const time = reminderTime.toTimeString().split(' ')[0]; // HH:MM:SS
+            console.log(time);
+
+            const response = await axios.post(
+                'http://192.168.101.3:9002/mob/save-prayer-reminder',
+                { time },
+                { headers: { "User-ID": loggedUser.id } }
+            );
+            Alert.alert("Sukces", "Przypomnienie o modlitwie zostało zapisane.");
+        } catch (error) {
+            Alert.alert("Błąd", "Nie udało się zapisać przypomnienia o modlitwie.");
+        }
+    };
+
+
+    const onChangeReminderTime = (event, selectedDate) => {
+        const currentDate = selectedDate || reminderTime;
+        setShowPicker(Platform.OS === 'ios' ? true : false);
+        setReminderTime(currentDate);
+    };
+
 
     if (loading) {
         return (
@@ -130,6 +158,30 @@ export default function Prayer() {
                 <Text style={styles.text}>Chwała Ojcu i Synowi, i Duchowi Świętemu.
                     Jak była na początku, teraz i zawsze, i na wieki wieków. Amen.
                 </Text>
+            </View>
+
+            {/* Wybór godziny przypomnienia */}
+            <View style={styles.reminderContainer}>
+                <Text style={styles.sectionHeader}>Ustaw godzinę przypomnienia:</Text>
+                <TouchableOpacity onPress={() => setShowPicker(true)} style={styles.button}>
+                    <Text style={styles.buttonText}>
+                        {reminderTime ? reminderTime.toLocaleTimeString() : "Wybierz godzinę"}
+                    </Text>
+                </TouchableOpacity>
+
+                {showPicker && (
+                    <DateTimePicker
+                        value={reminderTime || new Date()}
+                        mode="time"
+                        is24Hour={true}
+                        display="default"
+                        onChange={onChangeReminderTime}
+                    />
+                )}
+
+                <TouchableOpacity onPress={saveReminderTime} style={styles.button}>
+                    <Text style={styles.buttonText}>Zapisz przypomnienie</Text>
+                </TouchableOpacity>
             </View>
 
             {/* Przycisk */}
@@ -205,5 +257,8 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: "center",
         alignItems: "center",
+    },
+    reminderContainer: {
+        padding: 16,
     },
 });

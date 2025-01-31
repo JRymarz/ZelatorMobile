@@ -1,8 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image } from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, Modal, FlatList} from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {useRouter, Link} from "expo-router";
 import axios from "axios";
+import {Badge} from "@react-navigation/bottom-tabs/src/views/Badge";
+import MaterialIcons from "@expo/vector-icons/MaterialIcons";
 
 const Dashboard = () => {
     const [userData, setUserData] = useState(null);
@@ -11,6 +13,13 @@ const Dashboard = () => {
     const [currentTime, setCurrentTime] = useState(new Date());
     const [intention, setIntention] = useState(null);
     const [mystery, setMystery] = useState(null);
+
+    const [areUnread, setAreUnread] = useState(false);
+    const [nextEvent, setNextEvent] = useState(null);
+    const [notifications, setNotifications] = useState([]);
+    const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
+    const [openDialog, setOpenDialog] = useState(false);
+
 
 
     // Aktualizacja czasu
@@ -94,6 +103,126 @@ const Dashboard = () => {
         }
     };
 
+
+    useEffect(() => {
+        const fetchNoti = async () => {
+            try {
+                const storedUserData = await AsyncStorage.getItem('userData');
+                if(storedUserData) {
+                    const user = JSON.parse(storedUserData);
+                    const userId = user.id;
+
+                    const response = await axios.get(
+                        'http://192.168.101.3:9002/mob/chat/notifications',
+                        {
+                            headers: {
+                                'User-ID': userId,
+                            },
+                        });
+
+                    setNotifications(response.data);
+
+                    const unread = response.data.some(notification => !notification.isRead);
+                    setHasUnreadNotifications(unread);
+                }
+            } catch (error) {
+                console.error("Blad wczytywania notyfikacji");
+            }
+        };
+
+        fetchNoti();
+
+        const intervalId = setInterval(fetchNoti, 5000);
+
+        return () => clearInterval(intervalId);
+    }, []);
+
+
+    useEffect(() => {
+        const fetchNextEvent = async () => {
+            try {
+                const storedUserData = await AsyncStorage.getItem('userData');
+                if(storedUserData) {
+                    const user = JSON.parse(storedUserData);
+                    const userId = user.id;
+
+                    const response = await axios.get(
+                        'http://192.168.101.3:9002/mob/calendar-events/next',
+                        {
+                            headers: {
+                                'User-ID': userId,
+                            },
+                        });
+
+                    setNextEvent(response.data);
+                }
+            } catch (error) {
+                console.error("Błąd: ", error.message);
+            }
+        };
+
+        fetchNextEvent();
+
+        const intervalId = setInterval(fetchNextEvent, 60000);
+
+        return () => clearInterval(intervalId);
+    }, []);
+
+
+    useEffect(() => {
+        const fetchAreUnread = async () => {
+            try {
+                const storedUserData = await AsyncStorage.getItem('userData');
+                if(storedUserData) {
+                    const user = JSON.parse(storedUserData);
+                    const userId = user.id;
+
+                    const response = await axios.get(
+                        'http://192.168.101.3:9002/mob/chat/are-unread',
+                        {
+                            headers: {
+                                'User-ID': userId,
+                            },
+                        });
+
+                    setAreUnread(response.data);
+                }
+            } catch (error) {
+                console.error("Nie udało się pobrać nieprzeczytanych");
+            }
+        };
+
+        const intervalId = setInterval(fetchAreUnread, 3000);
+
+        return () => clearInterval(intervalId);
+    })
+
+
+    const handleNotificationClick = async () => {
+        try {
+            const storedUserData = await AsyncStorage.getItem('userData');
+            if(storedUserData) {
+                const user = JSON.parse(storedUserData);
+                const userId = user.id;
+
+                const response = await axios.post(
+                    'http://192.168.101.3:9002/mob/chat/read-notifications',
+                    {},
+                    {
+                        headers: {
+                            'User-ID': userId,
+                        },
+                    });
+
+                setHasUnreadNotifications(false);
+                setOpenDialog(true);
+            }
+        } catch (error) {
+            console.error("Błąd podczas oznaczania powiadomień jako przeczytane" + error.message);
+        }
+    };
+
+
     return (
         <View style={styles.container}>
             {/* Nagłówek */}
@@ -110,6 +239,31 @@ const Dashboard = () => {
                 </TouchableOpacity>
             </View>
 
+            {/* Ikona powiadomień z kropką */}
+            <TouchableOpacity onPress={() => handleNotificationClick()} style={styles.notificationWrapper}>
+                <View style={styles.notificationIcon}>
+                    <MaterialIcons name="notifications-active" size={40} color="black" />
+                    {hasUnreadNotifications && <View style={styles.badge} />}
+                </View>
+            </TouchableOpacity>
+
+            {/* Okno modalne z powiadomieniami */}
+            <Modal visible={openDialog} animationType="slide" transparent>
+                <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                        <Text style={styles.modalTitle}>Powiadomienia</Text>
+                        <FlatList
+                            data={notifications}
+                            keyExtractor={(item, index) => index.toString()}
+                            renderItem={({ item }) => <Text style={styles.notificationText}>{item.message}</Text>}
+                        />
+                        <TouchableOpacity onPress={() => setOpenDialog(false)} style={styles.closeButton}>
+                            <Text style={styles.closeButtonText}>Zamknij</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
+
             {/* Treść */}
             <ScrollView contentContainerStyle={styles.content}>
 
@@ -123,6 +277,18 @@ const Dashboard = () => {
                 {/* Tajemnica */}
                 <Text style={styles.sectionTitle}>Twoja tajemnica:</Text>
                 <Text style={styles.intentionMysteryText}>{mystery || "Wczytywanie tajemnicy..."}</Text>
+
+                {nextEvent ? (
+                    <>
+                        <Text style={styles.sectionTitle}>Najbliższe wydarzenie:</Text>
+                        <Text style={styles.intentionMysteryText}>{nextEvent.title}</Text>
+                        <Text style={styles.intentionMysteryText}>
+                            {new Date(nextEvent.eventDate).toISOString().replace("T", " ").slice(0, 16)}
+                        </Text>
+                    </>
+                ) : (
+                    <Text style={styles.intentionMysteryText}>Brak nadchodzących wydarzeń</Text>
+                )}
 
                 {/* Dane użytkownika */}
                 {userData ? (
@@ -167,10 +333,21 @@ const Dashboard = () => {
 
                 {/*Chat*/}
                 {intention && intention !== "Brak przypisania do róży" && (
-                    <TouchableOpacity style={styles.card} onPress={() => router.push('/dashboard/chat')}>
+                    <TouchableOpacity
+                        style={[styles.card, areUnread && styles.cardUnread]}
+                        onPress={() => router.push('/dashboard/chat')}
+                    >
+                        {/* Kropka powiadomień */}
+                        {areUnread && <View style={styles.badge} />}
+
                         <Text style={styles.cardTitle}>Chat</Text>
                         <Text style={styles.cardButton}>Wyświetl konwersacje</Text>
                     </TouchableOpacity>
+
+                    // <TouchableOpacity style={styles.card} onPress={() => router.push('/dashboard/chat')}>
+                    //     <Text style={styles.cardTitle}>Chat</Text>
+                    //     <Text style={styles.cardButton}>Wyświetl konwersacje</Text>
+                    // </TouchableOpacity>
                 )}
             </ScrollView>
 
@@ -268,6 +445,9 @@ const styles = StyleSheet.create({
         shadowRadius: 5,
         elevation: 3,
     },
+    cardUnread: {
+        backgroundColor: "#dcedc8", // Jaśniejszy kolor, jeśli są nowe wiadomości
+    },
     cardTitle: {
         fontSize: 16,
         fontWeight: 'bold',
@@ -328,5 +508,58 @@ const styles = StyleSheet.create({
         color: '#333',
         textAlign: 'center',
         marginBottom: 20,
+    },
+    notificationWrapper: {
+        width: 50,  // Dopasowanie szerokości do ikonki
+        height: 50, // Dopasowanie wysokości do ikonki
+        justifyContent: "center",
+        alignItems: "center",
+        marginLeft: 'auto',
+        marginRight: 'auto',
+    },
+    notificationIcon: {
+        position: "relative",
+    },
+    badge: {
+        position: "absolute",
+        top: -2,  // Delikatnie nad ikoną
+        right: -2, // Blisko prawej krawędzi
+        width: 12,
+        height: 12,
+        borderRadius: 6,
+        backgroundColor: "red",
+    },
+    modalContainer: {
+        flex: 1,
+        justifyContent: "center",
+        alignItems: "center",
+        backgroundColor: "rgba(0, 0, 0, 0.5)",
+    },
+    modalContent: {
+        width: "80%",
+        backgroundColor: "white",
+        padding: 20,
+        borderRadius: 10,
+        alignItems: "center",
+    },
+    modalTitle: {
+        fontSize: 18,
+        fontWeight: "bold",
+        marginBottom: 10,
+    },
+    notificationText: {
+        fontSize: 16,
+        paddingVertical: 5,
+    },
+    closeButton: {
+        marginTop: 15,
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        backgroundColor: "#007BFF",
+        borderRadius: 5,
+    },
+    closeButtonText: {
+        color: "white",
+        fontWeight: "bold",
     },
 });
