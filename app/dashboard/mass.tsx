@@ -14,6 +14,7 @@ import axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import {Link} from "expo-router";
 import DateTimePicker from '@react-native-community/datetimepicker';
+import Constants from 'expo-constants';
 
 export default function MassRequests() {
     const [massRequests, setMassRequests] = useState([]);
@@ -28,6 +29,8 @@ export default function MassRequests() {
     const [time, setTime] = useState(new Date());
     const [showTimePicker, setShowTimePicker] = useState(false);
 
+    const apiUrl = Constants.expoConfig.extra.API_URL;
+
     // Funkcja do pobierania próśb o Msze
     const fetchMassRequests = async () => {
         try {
@@ -37,7 +40,7 @@ export default function MassRequests() {
                 const userId = user.id;
 
                 const response = await axios.get(
-                    "http://192.168.101.3:9002/mob/mass-requests",
+                    `http://${apiUrl}:9002/mob/mass-requests`,
                     { headers: { "User-ID": userId } }
                 );
 
@@ -75,7 +78,7 @@ export default function MassRequests() {
                 console.log(newIntention + massDate);
 
                 await axios.post(
-                    "http://192.168.101.3:9002/mob/mass-request",
+                    `http://${apiUrl}:9002/mob/mass-request`,
                     {
                         intention: newIntention,
                         massDate: massDate,

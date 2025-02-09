@@ -14,6 +14,7 @@ import {
 import axios from "axios";
 import {useRouter, Link} from 'expo-router';
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from 'expo-constants';
 
 export default function MyRose() {
     const [roseDetails, setRoseDetails] = useState(null);
@@ -22,6 +23,7 @@ export default function MyRose() {
     const [loggedUser, setLoggedUser] = useState(null);
 
     const router = useRouter();
+    const apiUrl = Constants.expoConfig.extra.API_URL;
 
     useEffect(() => {
         const fetchRoseDetails = async () => {
@@ -31,7 +33,7 @@ export default function MyRose() {
                     const user = JSON.parse(storedUserData);
                     const userId = user.id;
 
-                    const response = await axios.get("http://192.168.101.3:9002/mob/my-rose", {
+                    const response = await axios.get(`http://${apiUrl}:9002/mob/my-rose`, {
                         headers: {
                             'User-ID': userId,
                         },

@@ -13,6 +13,7 @@ import {
 import axios from "axios";
 import {Link, useGlobalSearchParams} from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from 'expo-constants';
 
 const UserChat = () => {
     const {id} = useGlobalSearchParams(); // Pobieranie parametru `id` z URL
@@ -20,6 +21,8 @@ const UserChat = () => {
     const [newMessage, setNewMessage] = useState("");
     const [loading, setLoading] = useState(true);
     const [currentUserId, setCurrentUserId] = useState(null);
+
+    const apiUrl = Constants.expoConfig.extra.API_URL;
 
 
     const markMessagesAsRead = async () => {
@@ -30,7 +33,7 @@ const UserChat = () => {
                 const userId = user.id;
 
                 await axios.patch(
-                    "http://192.168.101.3:9002/mob/chat/mark-as-read",
+                    `http://${apiUrl}:9002/mob/chat/mark-as-read`,
                     null,
                     {
                         params: {receiverId: id},
@@ -39,7 +42,7 @@ const UserChat = () => {
                 );
             }
         } catch (err) {
-            console.error("Nie udało się oznaczyć wiadomości jako przeczytane", err);
+            console.log("Nie udało się oznaczyć wiadomości jako przeczytane", err);
         }
     };
 
@@ -51,7 +54,7 @@ const UserChat = () => {
                 const user = JSON.parse(storedUserData);
                 const userId = user.id;
 
-                const response = await axios.get("http://192.168.101.3:9002/mob/chat/conversation", {
+                const response = await axios.get(`http://${apiUrl}:9002/mob/chat/conversation`, {
                     params: {userId: id},
                     headers: {'User-ID': userId},
                 });
@@ -59,7 +62,7 @@ const UserChat = () => {
                 setCurrentUserId(userId);
             }
         } catch (err) {
-            console.error(err);
+            console.log(err);
         } finally {
             setLoading(false);
         }
@@ -92,7 +95,7 @@ const UserChat = () => {
                 const userId = user.id;
 
                 const response = await axios.post(
-                    "http://192.168.101.3:9002/mob/chat/send",
+                    `http://${apiUrl}:9002/mob/chat/send`,
                     {
                         message: newMessage,
                         receiverId: id
@@ -103,7 +106,7 @@ const UserChat = () => {
                 setNewMessage("");
             }
         } catch (err) {
-            console.error("Nie udało się wysłać wiadomości", err);
+            console.log("Nie udało się wysłać wiadomości", err);
         }
     };
 

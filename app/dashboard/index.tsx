@@ -5,6 +5,7 @@ import {useRouter, Link} from "expo-router";
 import axios from "axios";
 import {Badge} from "@react-navigation/bottom-tabs/src/views/Badge";
 import MaterialIcons from "@expo/vector-icons/MaterialIcons";
+import Constants from 'expo-constants';
 
 const Dashboard = () => {
     const [userData, setUserData] = useState(null);
@@ -20,6 +21,8 @@ const Dashboard = () => {
     const [hasUnreadNotifications, setHasUnreadNotifications] = useState(false);
     const [openDialog, setOpenDialog] = useState(false);
 
+
+    const apiUrl = Constants.expoConfig.extra.API_URL;
 
 
     // Aktualizacja czasu
@@ -39,7 +42,7 @@ const Dashboard = () => {
                     const userId = user.id;
 
                     const response = await axios.get(
-                        'http://192.168.101.3:9002/mob/intention-mystery',
+                        `http://${apiUrl}:9002/mob/intention-mystery`,
                             {
                                 headers: {
                                     'User-ID': userId,
@@ -51,11 +54,11 @@ const Dashboard = () => {
                         setIntention(data.intention?.title || "Brak przypisania do róży");
                         setMystery(data.mystery?.name || "Brak przypisanej tajemnicy");
                     } else {
-                        console.error("Błąd podczas pobierania danych.");
+                        console.log("Błąd podczas pobierania danych.");
                     }
                 }
             } catch (error) {
-                console.error("Nieoczekiwany błąd:", error.message);
+                console.log("Nieoczekiwany błąd:", error.message);
             }
         };
 
@@ -85,7 +88,7 @@ const Dashboard = () => {
                     setUserData(JSON.parse(storedUserData));
                 }
             } catch (error) {
-                console.error("Błąd podczas pobierania danych usera:", error.message);
+                console.log("Błąd podczas pobierania danych usera:", error.message);
             }
         };
 
@@ -99,7 +102,7 @@ const Dashboard = () => {
             console.log("Wylogowano usera.");
             router.replace('/login');
         } catch (error) {
-            console.error("Bład podczas wylogowywania:", error);
+            console.log("Bład podczas wylogowywania:", error);
         }
     };
 
@@ -113,7 +116,7 @@ const Dashboard = () => {
                     const userId = user.id;
 
                     const response = await axios.get(
-                        'http://192.168.101.3:9002/mob/chat/notifications',
+                        `http://${apiUrl}:9002/mob/chat/notifications`,
                         {
                             headers: {
                                 'User-ID': userId,
@@ -126,7 +129,7 @@ const Dashboard = () => {
                     setHasUnreadNotifications(unread);
                 }
             } catch (error) {
-                console.error("Blad wczytywania notyfikacji");
+                console.log("Blad wczytywania notyfikacji");
             }
         };
 
@@ -147,7 +150,7 @@ const Dashboard = () => {
                     const userId = user.id;
 
                     const response = await axios.get(
-                        'http://192.168.101.3:9002/mob/calendar-events/next',
+                        `http://${apiUrl}:9002/mob/calendar-events/next`,
                         {
                             headers: {
                                 'User-ID': userId,
@@ -157,7 +160,7 @@ const Dashboard = () => {
                     setNextEvent(response.data);
                 }
             } catch (error) {
-                console.error("Błąd: ", error.message);
+                console.log("Błąd: ", error.message);
             }
         };
 
@@ -178,7 +181,7 @@ const Dashboard = () => {
                     const userId = user.id;
 
                     const response = await axios.get(
-                        'http://192.168.101.3:9002/mob/chat/are-unread',
+                        `http://${apiUrl}:9002/mob/chat/are-unread`,
                         {
                             headers: {
                                 'User-ID': userId,
@@ -188,7 +191,7 @@ const Dashboard = () => {
                     setAreUnread(response.data);
                 }
             } catch (error) {
-                console.error("Nie udało się pobrać nieprzeczytanych");
+                console.log("Nie udało się pobrać nieprzeczytanych");
             }
         };
 
@@ -206,7 +209,7 @@ const Dashboard = () => {
                 const userId = user.id;
 
                 const response = await axios.post(
-                    'http://192.168.101.3:9002/mob/chat/read-notifications',
+                    `http://${apiUrl}:9002/mob/chat/read-notifications`,
                     {},
                     {
                         headers: {
@@ -218,7 +221,7 @@ const Dashboard = () => {
                 setOpenDialog(true);
             }
         } catch (error) {
-            console.error("Błąd podczas oznaczania powiadomień jako przeczytane" + error.message);
+            console.log("Błąd podczas oznaczania powiadomień jako przeczytane" + error.message);
         }
     };
 

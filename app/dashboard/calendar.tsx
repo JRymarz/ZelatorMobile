@@ -5,6 +5,7 @@ import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import {Link} from "expo-router";
+import Constants from 'expo-constants';
 
 LocaleConfig.locales['pl'] = {
     monthNames: [
@@ -41,6 +42,8 @@ const CalendarScreen = () => {
     const showDatePicker = () => setDatePickerVisibility(true);
     const hideDatePicker = () => setDatePickerVisibility(false);
 
+    const apiUrl = Constants.expoConfig.extra.API_URL;
+
 
     const handleDateConfirm = (date) => {
         const formattedDate = date.toISOString().split('T')[0]; // YYYY-MM-DD
@@ -70,13 +73,13 @@ const CalendarScreen = () => {
                 const user = JSON.parse(storedUserData);
                 const userId = user.id;
 
-                const response = await axios.get('http://192.168.101.3:9002/mob/calendar-events', {
+                const response = await axios.get(`http://${apiUrl}:9002/mob/calendar-events`, {
                     headers: { 'User-ID': userId },
                 });
                 setEvents(response.data);
             }
         } catch (error) {
-            console.error('Błąd podczas pobierania wydarzeń:', error);
+            console.log('Błąd podczas pobierania wydarzeń:', error);
             Alert.alert('Błąd', 'Nie udało się pobrać wydarzeń.');
         }
     };
@@ -90,7 +93,7 @@ const CalendarScreen = () => {
                 const userId = user.id;
 
                 const response = await axios.post(
-                    'http://192.168.101.3:9002/mob/calendar-events/create',
+                    `http://${apiUrl}:9002/mob/calendar-events/create`,
                     newEvent,
                     { headers: { 'User-ID': userId } }
                 );
@@ -99,7 +102,7 @@ const CalendarScreen = () => {
                 fetchEvents();
             }
         } catch (error) {
-            console.error('Błąd podczas tworzenia wydarzenia:', error);
+            console.log('Błąd podczas tworzenia wydarzenia:', error);
             Alert.alert('Błąd', 'Nie udało się utworzyć wydarzenia.');
         }
     };

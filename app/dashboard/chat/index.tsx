@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, FlatList, TouchableOpacity, ActivityIndicator, 
 import axios from "axios";
 import {Link, useRouter} from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import Constants from 'expo-constants';
 
 const ChatList = () => {
     const [conversations, setConversations] = useState([]);
@@ -11,6 +12,7 @@ const ChatList = () => {
     const [unread, setUnread] = useState({unreadGroupConversation: false, unreadUserConversations: []});
 
     const router = useRouter();
+    const apiUrl = Constants.expoConfig.extra.API_URL;
 
     useEffect(() => {
         const fetchConversations = async () => {
@@ -20,7 +22,7 @@ const ChatList = () => {
                     const user = JSON.parse(storedUserData);
                     const userId = user.id;
 
-                    const response = await axios.get("http://192.168.101.3:9002/mob/chat/conversations", {
+                    const response = await axios.get(`http://${apiUrl}:9002/mob/chat/conversations`, {
                         headers: {'User-ID': userId},
                     });
                     setGroup(response.data.group);
@@ -28,7 +30,7 @@ const ChatList = () => {
                 }
             } catch (err) {
                 Alert.alert("Błąd", "Nie udało się pobrać danych");
-                console.error(err);
+                console.log(err);
             } finally {
                 setLoading(false);
             }
@@ -46,14 +48,14 @@ const ChatList = () => {
                     const user = JSON.parse(storedUserData);
                     const userId = user.id;
 
-                    const response = await axios.get("http://192.168.101.3:9002/mob/chat/unread-conversations", {
+                    const response = await axios.get(`http://${apiUrl}:9002/mob/chat/unread-conversations`, {
                         headers: {'User-ID': userId},
                     });
 
                     setUnread(response.data);
                 }
             } catch (error) {
-                console.error("Nie udało się pobrać nieprzeczytanych");
+                console.log("Nie udało się pobrać nieprzeczytanych");
             }
         };
 

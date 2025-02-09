@@ -12,6 +12,7 @@ import axios from "axios";
 import { Link, useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import Constants from 'expo-constants';
 
 export default function Prayer() {
     const [prayerDetails, setPrayerDetails] = useState(null);
@@ -23,6 +24,8 @@ export default function Prayer() {
     const [showPicker, setShowPicker] = useState(false);
     const router = useRouter();
 
+    const apiUrl = Constants.expoConfig.extra.API_URL;
+
     useEffect(() => {
         const fetchPrayerDetails = async () => {
             try {
@@ -31,7 +34,7 @@ export default function Prayer() {
                     const user = JSON.parse(storedUserData);
                     const userId = user.id;
 
-                    const response = await axios.get("http://192.168.101.3:9002/mob/prayer-details", {
+                    const response = await axios.get(`http://${apiUrl}:9002/mob/prayer-details`, {
                         headers: {
                             "User-ID": userId,
                         },
@@ -39,7 +42,7 @@ export default function Prayer() {
                     setPrayerDetails(response.data);
 
                     const status = await axios.get(
-                        'http://192.168.101.3:9002/mob/prayer-status',
+                        `http://${apiUrl}:9002/mob/prayer-status`,
                         {headers: {'User-ID': userId}}
                     );
                     setPrayerStatus(status.data);
@@ -60,7 +63,7 @@ export default function Prayer() {
     const markPrayerAsCompleted = async () => {
         try {
             const response = await axios.post(
-                'http://192.168.101.3:9002/mob/prayer-complete',
+                `http://${apiUrl}:9002/mob/prayer-complete`,
                 {},
                 {headers: {"User-ID": loggedUser.id}}
             );
@@ -78,7 +81,7 @@ export default function Prayer() {
             console.log(time);
 
             const response = await axios.post(
-                'http://192.168.101.3:9002/mob/save-prayer-reminder',
+                `http://${apiUrl}:9002/mob/save-prayer-reminder`,
                 { time },
                 { headers: { "User-ID": loggedUser.id } }
             );
@@ -161,6 +164,7 @@ export default function Prayer() {
             </View>
 
             {/* Wybór godziny przypomnienia */}
+            {prayerDetails.mystery && (
             <View style={styles.reminderContainer}>
                 <Text style={styles.sectionHeader}>Ustaw godzinę przypomnienia:</Text>
                 <TouchableOpacity onPress={() => setShowPicker(true)} style={styles.button}>
@@ -183,6 +187,7 @@ export default function Prayer() {
                     <Text style={styles.buttonText}>Zapisz przypomnienie</Text>
                 </TouchableOpacity>
             </View>
+            )}
 
             {/* Przycisk */}
             {prayerDetails.mystery && (

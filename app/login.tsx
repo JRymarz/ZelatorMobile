@@ -3,6 +3,7 @@ import { View, Text, TextInput, Button, StyleSheet, Alert, TouchableOpacity, Ima
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
 import {Link, useRouter} from "expo-router";
+import Constants from 'expo-constants';
 
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
@@ -12,9 +13,11 @@ export default function LoginScreen() {
     // const navigation = useNavigation();
     // const { setUser } = useUser();
 
+    const apiUrl = Constants.expoConfig.extra.API_URL;
+
     const handleLogin = async () => {
         try {
-            const response = await axios.post('http://192.168.101.3:9002/mob/login', {
+            const response = await axios.post(`http://${apiUrl}:9002/mob/login`, {
                 email,
                 password,
             });
