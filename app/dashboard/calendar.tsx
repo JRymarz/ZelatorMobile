@@ -24,7 +24,7 @@ LocaleConfig.locales['pl'] = {
     ],
     monthNamesShort: ['Sty.', 'Lut.', 'Mrz.', 'Kwi.', 'Maj', 'Cze.', 'Lip.', 'Sie.', 'Wrz.', 'Paź.', 'List.', 'Gru.'],
     dayNames: ['Niedziela', 'Poniedziałek', 'Wtorek', 'Środa', 'Czwartek', 'Piątek', 'Sobota'],
-    dayNamesShort: ['Pon.', 'Wt.', 'Śr.', 'Czw.', 'Pi.', 'So.', 'Ni.'],
+    dayNamesShort: ['Ni.', 'Pon.', 'Wt.', 'Śr.', 'Czw.', 'Pi.', 'So.'],
     today: "Dzisiaj"
 };
 
