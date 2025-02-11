@@ -1,50 +1,12 @@
-ad# Welcome to your Expo app 👋
+# README
+## Dane użytkowników testowych
+### email: do znalezienia w bazie danych
+### hasło: member dla Członków, zelator dla Zelatorów, admin dla Głównego Zelatora
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
-
-## Get started
-
-1. Install dependencies
-
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-    npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+## Instrukcja uruchamiania:
+Aby uruchomić aplikację mobilną, by współdziałała prawidłowo z aplikacją backendową uruchomioną lokalnie, konieczne jest wcześniejsze przygotowanie środowiska. Pierwszym krokiem jest instalacja wersji LTS Node.js, w wydaniu nie starszym niż 18. Należy również mieć zainstalowany Java Development Kit (JDK) w wersji 17.
+Po zainstalowaniu tych narzędzi należy pobrać adres IP komputera, na którym działa backend. Można to zrobić za pomocą polecenie ipconfig w wierszu polecenia. Otrzymany adres IPv4 należy skopiować i wkleić w pliku app.json w katalogu głównym projektu, w sekcji „extra.API_URL”. Jest to konieczne, by aplikacja mobilna mogła komunikować się z aplikacją backendową.
+Następnie należy zainstalować Android Studio z domyślnymi opcjami oraz skonfigurować środowisko. W ramach konfiguracji potrzeba utworzyć nową zmienną środowiskową ANDROID_HOME, która powinna wskazywać na katalog instalacyjny Android SDK (domyślnie zainstalowany przez Android studio w: „C:\Users\nazwa_uzytkownika\AppData\Loca\Android\Sdk”). Dodatkowo, ścieżka do katalogu „platform-tools”, znajdującego się wewnątrz katalogu „Sdk” musi zostać dodana do zmiennej środowiskowej Path.
+Po poprawnym skonfigurowaniu środowiska można przejść do instalacji zależności projektu. W głównym katalogu aplikacji należy uruchomić polecenie „npm install”.
+Aplikację można uruchomić na dwa sposoby. Pierwszy to uruchomienie na emulatorze Androida. W tym celu należy utworzyć nowy wirtualny telefon (AVD) w Android Studio, a następnie go uruchomić. Po uruchomieniu emulowanego urządzenia można przejść do głównego katalogu projektu i użyć polecenia „npx expo run:android”, aby zainstalować i uruchomić aplikację. Należy pamiętać, że emulowane urządzenie z systemem Android musi zostać uruchomione na tym samym komputerze, na którym działa aplikacja backendowa.
+Drugim rozwiązaniem jest uruchomienie aplikacji na fizycznym urządzeniu. Aby to zrobić należy włączyć opcje programistyczne w ustawieniach telefonu i podłączyć go do komputera za pomocą kabla USB. W sekcji opcji programistycznych należy aktywować „Debugowanie USB” oraz „Instalowanie aplikacji przez USB”. Następnie wystarczy przejść na komputerze do katalogu głównego projektu i użyć polecenia „npx expo run:android”, by zainstalować i uruchomić aplikację na telefonie. Należy pamiętać, że zarówno urządzenie fizyczne z systemem Android, jak i komputer z uruchomioną aplikacją mobilną muszą znajdować się w jednej sieci lokalnej.
